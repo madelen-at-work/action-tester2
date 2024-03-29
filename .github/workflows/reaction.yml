@@ -5,19 +5,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: set branch name
+        run: |
+          echo "base_pr_branch=cherrybot-${RANDOM}" >> "$GITHUB_ENV"
       - name: create pr of cherry-pick
         run: |
-          echo base_pr_branch=$("cherrybot-"${RANDOM}) >> $GITHUB_ENV
           git config user.name github-actions
           git config user.email github-actions@github.com
           git fetch
-          git switch -c ${{ env.base_pr_branch }}
+          git switch -c $base_pr_branch
           git remote add other $OTHER_REPO_FULL -f --no-tags -t main -m main
           
           git cherry-pick refs/remotes/other/HEAD --strategy-option theirs
-          git push --set-upstream origin ${{ env.base_pr_branch }}
-          echo title_text=$(git show -s --format=%s)  >> $GITHUB_ENV
-          econ body_text="Cherry-pick from $OTHER_REPO_FULL"  >> $GITHUB_ENV
+          git push --set-upstream origin $base_pr_branch
+          echo "title_text=$(git show -s --format=%s)"  >> $GITHUB_ENV
+          econ "body_text=Cherry-pick from $OTHER_REPO_FULL"  >> $GITHUB_ENV
           gh pr create --title ${{ env.title_text }} --body ${{ env.body_text }} --base main --repo $THIS_REPO
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
