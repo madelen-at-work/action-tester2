@@ -19,7 +19,7 @@ jobs:
           git config user.email github-actions@github.com
           git fetch
           git switch -c "pr-branch"
-          git remote add other https://github.com/madelen-at-work/action-tester.git -F --no-tags -t main -m main
+          git remote add other https://github.com/madelen-at-work/action-tester.git -f --no-tags -t main -m main
           
           git cherry-pick refs/remotes/other/HEAD --strategy-option theirs
           git push --set-upstream origin pr-branch
