@@ -17,7 +17,7 @@ jobs:
           git cherry-pick refs/remotes/other/HEAD --strategy-option theirs
           git push --set-upstream origin $base_pr_branch
           
-          title_text=$(git show -s --format=%s)
+          title_text=$(git show -s --format=%s | sed -E 's/ \(#[0-9]+\)$//')
           body_text="Cherry-pick from $OTHER_REPO_FULL"
           gh pr create --title $title_text --body $body_text --base main --repo $THIS_REPO
         env:
