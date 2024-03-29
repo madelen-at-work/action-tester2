@@ -1,22 +1,17 @@
 on: workflow_dispatch
 
 jobs:
-  print:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Print to log
-        run: echo "hello log"
-  do-da-pr:
+  create-pr:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: clone 2nd repo
+      - name: create pr of cherry-pick
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
           git fetch
           git switch -c $BASE_PR_BRANCH
-          git remote add other $OTHER_REPO -f --no-tags -t main -m main
+          git remote add other $OTHER_REPO_FULL -f --no-tags -t main -m main
           
           git cherry-pick refs/remotes/other/HEAD --strategy-option theirs
           git push --set-upstream origin $BASE_PR_BRANCH
@@ -27,4 +22,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           THIS_REPO: "madelen-at-work/action-tester2"
           OTHER_REPO_FULL: "https://github.com/madelen-at-work/action-tester.git"
-          BASE_PR_BRANCH: "cherrybot/github-actions/action/${RANDOM}"
+          BASE_PR_BRANCH: "cherrybot/github-actions/action/${{ RANDOM }}"
