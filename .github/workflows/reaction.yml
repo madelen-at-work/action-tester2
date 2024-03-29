@@ -6,7 +6,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: create pr of cherry-pick
-      - shell: bash
         run: |
           base_pr_branch=$("cherrybot/github-actions/action/"${RANDOM})
           git config user.name github-actions
