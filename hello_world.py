@@ -1,6 +1,6 @@
 ''' hello_world module '''
 
-NAME="action-tester"
+NAME="action-tester2"
 
 def main(name=NAME):
     ''' The main function '''
