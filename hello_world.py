@@ -1,10 +1,13 @@
 ''' hello_world module '''
 
-NAME="action-tester2"
+import datetime
 
-def main(name=NAME):
+DEFAULT_NAME="action-tester"
+
+def main(name):
     ''' The main function '''
-    print(f"Hello world! from {name}")
+    print(f"Hello world! from {name}."
+          f" The time is {datetime.datetime.now()}")
 
 if __name__ == "__main__":
-    main("main caller")
+    main(DEFAULT_NAME)
