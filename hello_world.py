@@ -5,7 +5,7 @@ import datetime
 DEFAULT_NAME="action-tester2"
 
 def main(name):
-    ''' The main function '''
+    ''' Prints a greeting and the current time.'''
     print(f"Hello world! from {name}."
           f" The time is {datetime.datetime.now()}")
 
