@@ -2,7 +2,7 @@
 
 import datetime
 
-DEFAULT_NAME="action-tester"
+DEFAULT_NAME="action-tester2"
 
 def main(name):
     ''' The main function '''
