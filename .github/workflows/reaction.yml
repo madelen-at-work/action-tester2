@@ -28,7 +28,9 @@ jobs:
           remote_pr_id=$(gawk 'match($0, /\(#([0-9]+)\)$/, ary) {print ary[1]}' <<< $commit_msg)
           remote_pr_body="$(gh pr view $remote_pr_id --repo $OTHER_REPO_FULL --json body --jq '.body')"  
 
-          body_text="Cherry-pick of $commit_hash from $OTHER_REPO_FULL\n$remote_pr_body"
+          body_text="Cherry-pick of $commit_hash from $OTHER_REPO_FULL
+          
+          $remote_pr_body"
           echo "body text is $body_text"
           gh pr create --title "$title_txt" --body "$body_text" --base main --repo $THIS_REPO
         env:
