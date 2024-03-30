@@ -12,7 +12,7 @@ jobs:
           git config user.email github-actions@github.com
           git fetch
           git switch -c $base_pr_branch
-          git remote add other $OTHER_REPO_FULL -f --no-tags -t main -m main
+          git remote add other $OTHER_REPO_FULL.git -f --no-tags -t main -m main
           
           commit_hash="$(git rev-parse refs/remotes/other/HEAD)"
           
@@ -26,14 +26,16 @@ jobs:
           echo "title text is $title_txt"
 
           remote_pr_id=$(gawk 'match($0, /\(#([0-9]+)\)$/, ary) {print ary[1]}' <<< $commit_msg)
-          remote_pr_body="$(gh pr view $remote_pr_id --repo $OTHER_REPO_FULL --json body --jq '.body')"  
+          remote_pr_body="$(gh pr view $remote_pr_id --repo $OTHER_REPO_FULL.git --json body --jq '.body')"  
 
-          body_text="Cherry-pick of $commit_hash from $OTHER_REPO_FULL
+          body_text="This is an automatic cherry-pick of [$commit_hash]($OTHER_REPO_FULL/commit/$commit_hash)
           
+          The original PR was [#$remote_pr_id]($OTHER_REPO_FULL/pull/$emote_pr_id) with message:
+
           $remote_pr_body"
           echo "body text is $body_text"
           gh pr create --title "$title_txt" --body "$body_text" --base main --repo $THIS_REPO
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           THIS_REPO: "madelen-at-work/action-tester2"
-          OTHER_REPO_FULL: "https://github.com/madelen-at-work/action-tester.git"
+          OTHER_REPO_FULL: "https://github.com/madelen-at-work/action-tester"
