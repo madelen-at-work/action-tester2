@@ -14,12 +14,20 @@ jobs:
           git switch -c $base_pr_branch
           git remote add other $OTHER_REPO_FULL -f --no-tags -t main -m main
           
-          git cherry-pick refs/remotes/other/HEAD --strategy-option theirs
-          git push --set-upstream origin $base_pr_branch
+          commit_hash="$(git rev-parse refs/remotes/other/HEAD)"
           
-          title_text="$(git show -s --format=%s | sed -E 's/ \(#[0-9]+\)$//')"
+          git cherry-pick $commit_hash --strategy-option theirs
+          git push --set-upstream origin $base_pr_branch
+
+          commit_msg="$(git show -s --format=%s)"
+          
+          title_txt=$(sed -E 's/ \(#[0-9]+\)$//' <<< $commit_msg)
           echo "title text is $title_text"
-          body_text="Cherry-pick from $OTHER_REPO_FULL"
+
+          remote_pr_id=$(gawk 'match($0, /\(#([0-9]+)\)$/, ary) {print ary[1]}' <<< $commit_msg)
+          remote_pr_body=$(gh pr view $remote_pr_id --repo $OTHER_REPO_FULL --json body --jq '.body')  
+
+          body_text="Cherry-pick of $commit_hash from $OTHER_REPO_FULL\n$remote_pr_body"
           echo "body text is $body_text"
           gh pr create --title "$title_text" --body "$body_text" --base main --repo $THIS_REPO
         env:
