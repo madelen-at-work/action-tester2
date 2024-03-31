@@ -7,10 +7,11 @@ jobs:
       - uses: actions/checkout@v4
       - name: create pr of cherry-pick
         run: |
+          pr_branch="cherrybot-${RANDOM}"
           git config user.name github-actions
           git config user.email github-actions@github.com
 
-          git switch -c $PR_BRANCH
+          git switch -c $pr_branch
           git remote add other $OTHER_REPO_FULL.git -f --no-tags -t main -m main
           
           commit_hash="$(git rev-parse refs/remotes/other/HEAD)"
@@ -31,10 +32,9 @@ jobs:
           $remote_pr_body"
           echo "body text is $body_text"
 
-          git push --set-upstream origin $PR_BRANCH
+          git push --set-upstream origin $pr_branch
           gh pr create --title "$title_txt" --body "$body_text" --base main --repo $THIS_REPO
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           THIS_REPO: "madelen-at-work/action-tester2"
           OTHER_REPO_FULL: "https://github.com/madelen-at-work/action-tester"
-          PR_BRANCH: "cherrybot-${RANDOM}"
