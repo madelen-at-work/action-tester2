@@ -7,15 +7,13 @@ jobs:
       - uses: actions/checkout@v4
       - name: create pr of cherry-pick
         run: |
-          base_pr_branch="cherrybot-${RANDOM}"
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git fetch
-          git switch -c $base_pr_branch
+
+          git switch -c $PR_BRANCH
           git remote add other $OTHER_REPO_FULL.git -f --no-tags -t main -m main
           
           commit_hash="$(git rev-parse refs/remotes/other/HEAD)"
-          
           git cherry-pick $commit_hash --strategy-option theirs
           
           remote_pr_id=$(gawk 'match($0, /\(#([0-9]+)\)$/, ary) {print ary[1]}' <<< $(git show -s --format=%s))
@@ -26,7 +24,6 @@ jobs:
           echo "title text is $title_txt"
 
           remote_pr_body="$(gh pr view $remote_pr_id --repo $OTHER_REPO_FULL.git --json body --jq '.body')"  
-
           body_text="This is an automatic cherry-pick of [$commit_hash]($OTHER_REPO_FULL/commit/$commit_hash)
           
           The original PR was [#$remote_pr_id]($OTHER_REPO_FULL/pull/$remote_pr_id) with message:
@@ -34,9 +31,10 @@ jobs:
           $remote_pr_body"
           echo "body text is $body_text"
 
-          git push --set-upstream origin $base_pr_branch
+          git push --set-upstream origin $PR_BRANCH
           gh pr create --title "$title_txt" --body "$body_text" --base main --repo $THIS_REPO
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           THIS_REPO: "madelen-at-work/action-tester2"
           OTHER_REPO_FULL: "https://github.com/madelen-at-work/action-tester"
+          PR_BRANCH: "cherrybot-${RANDOM}"
