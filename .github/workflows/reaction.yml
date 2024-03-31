@@ -37,4 +37,4 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           THIS_REPO: "madelen-at-work/action-tester2"
           OTHER_REPO_FULL: "https://github.com/madelen-at-work/action-tester"
-          PR_BRANCH: "cherrybot-${RANDOM}"
+          PR_BRANCH: "cherrybot-${{ RANDOM }}"
