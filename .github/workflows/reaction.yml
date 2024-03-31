@@ -19,13 +19,14 @@ jobs:
           git cherry-pick $commit_hash --strategy-option theirs
           git push --set-upstream origin $base_pr_branch
 
-          commit_msg="$(git show -s --format=%s)"
-          echo "commit msg is $commit_msg"
-          
-          title_txt="$(sed -E 's/ \(#[0-9]+\)$//' <<< $commit_msg)"
+          remote_pr_id=$(gawk 'match($0, /\(#([0-9]+)\)$/, ary) {print ary[1]}' <<< $(git show -s --format=%s))
+
+          trimmed_commit_msg="$(sed -E '1 s/ \(#[0-9]+\)$//' <<< $(git show -s --format=%B))"
+          git commit --amend -m "$trimmed_commit_msg" 
+
+          title_txt="$(git show -s --format=%s)"
           echo "title text is $title_txt"
 
-          remote_pr_id=$(gawk 'match($0, /\(#([0-9]+)\)$/, ary) {print ary[1]}' <<< $commit_msg)
           remote_pr_body="$(gh pr view $remote_pr_id --repo $OTHER_REPO_FULL.git --json body --jq '.body')"  
 
           body_text="This is an automatic cherry-pick of [$commit_hash]($OTHER_REPO_FULL/commit/$commit_hash)
